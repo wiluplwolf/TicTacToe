@@ -38,11 +38,12 @@ public class Game extends JFrame {
      * Constructor with one argument
      * @param jLabel is an array of JLabels
      */
-    public Game(JLabel[] jLabel){
+    public Game(JLabel[] jLabel, int player){
         this.setVisible(true);
         this.setTitle("Tic Tac Toe");
         this.setResizable(false);
         createLabels(jLabel);
+        playingPlayer = player;
         gameBoard(this);
         this.pack();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -121,6 +122,11 @@ public class Game extends JFrame {
         }
     }
 
+    /**
+     * Method for preparing text to showMessageDialog informing who is starting the game
+     * @param playingPlayer the player
+     * @return String with who is starting the game
+     */
     private String startingPlayerName(int playingPlayer){
         if(playingPlayer == 0){
             return "Player X starts the game";

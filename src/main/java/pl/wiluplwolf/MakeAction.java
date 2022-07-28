@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
  */
 public class MakeAction implements ActionListener{
     private final GameButton game;
-    private int scored = 0;
     private JFrame frame;
 
     /**
@@ -34,24 +33,17 @@ public class MakeAction implements ActionListener{
             game.drawingCross();
             Game.boardInt[game.getI()/3][game.getI()%3] = 0;
             //helpDraw(); //Uncomment if you would like to see board in console after each move.
-
-            if(checkGame(Game.playingPlayer)){
-                //System.out.println("Win 0");
-                restartGame();
-            }
-            checkDraw(scored);
-            Game.playingPlayer = 1;
         } else {
             game.drawingCircle();
             Game.boardInt[game.getI()/3][game.getI()%3] = 1;
             //helpDraw(); //Uncomment if you would like to see board in console after each move.
+        }
 
-            if(checkGame(Game.playingPlayer)){
-                //System.out.println("Win 1");
-                restartGame();
-            }
-            checkDraw(scored);
-            Game.playingPlayer = 0;
+        if(checkGame(Game.playingPlayer)){
+            changePlayer(Game.playingPlayer);
+            restartGame();
+        } else {
+            if(checkDraw() > 0) changePlayer(Game.playingPlayer);
         }
     }
 
@@ -71,35 +63,35 @@ public class MakeAction implements ActionListener{
 
     /**
      * Method to checks if anyone has won
-     * @param x the player
+     * @param player the player
      * @return true
      */
-    private boolean checkGame(int x){
+    private boolean checkGame(int player){
         for (int i = 0; i < 3; i++) {
-            if(Game.boardInt[i][0] == x && Game.boardInt[i][1] == x && Game.boardInt[i][2] == x){
+            if(Game.boardInt[i][0] == player && Game.boardInt[i][1] == player && Game.boardInt[i][2] == player){
                 lockButtons();
-                addPoint(x);
+                addPoint(player);
                 return true;
             }
         }
 
         for (int i = 0; i < 3; i++) {
-            if(Game.boardInt[0][i] == x && Game.boardInt[1][i] == x && Game.boardInt[2][i] == x){
+            if(Game.boardInt[0][i] == player && Game.boardInt[1][i] == player && Game.boardInt[2][i] == player){
                 lockButtons();
-                addPoint(x);
+                addPoint(player);
                 return true;
             }
         }
 
-        if(Game.boardInt[0][0] == x && Game.boardInt[1][1] == x && Game.boardInt[2][2] == x) {
+        if(Game.boardInt[0][0] == player && Game.boardInt[1][1] == player && Game.boardInt[2][2] == player) {
             lockButtons();
-            addPoint(x);
+            addPoint(player);
             return true;
         }
 
-        if(Game.boardInt[0][2] == x && Game.boardInt[1][1] == x && Game.boardInt[2][0] == x) {
+        if(Game.boardInt[0][2] == player && Game.boardInt[1][1] == player && Game.boardInt[2][0] == player) {
             lockButtons();
-            addPoint(x);
+            addPoint(player);
             return true;
         }
 
@@ -120,7 +112,7 @@ public class MakeAction implements ActionListener{
      * @param i the player
      */
     private void addPoint(int i){
-        int s = 0;
+        int s;
         if(i == 0){
             s = Integer.parseInt(Game.jLabels[1].getText());
             Game.jLabels[1].setText(++s + "");
@@ -128,19 +120,19 @@ public class MakeAction implements ActionListener{
             s = Integer.parseInt(Game.jLabels[3].getText());
             Game.jLabels[3].setText(++s + "");
         }
-        scored++;
     }
 
     /**
      * Check if the game end with draw
-     * @param scored information about that the point has been added
      */
-    private void checkDraw(int scored){
-        if(Game.doneMoves >= 9 && scored == 0){
-            //System.out.println("Draw");
+    private int checkDraw(){
+        if(Game.doneMoves >= 9){
             JOptionPane.showMessageDialog(null, "Draw", "Draw", JOptionPane.INFORMATION_MESSAGE);
+            changePlayer(Game.playingPlayer);
             restartGame();
+            return 0;
         }
+        return 1;
     }
 
     /**
@@ -148,12 +140,19 @@ public class MakeAction implements ActionListener{
      */
     private void restartGame(){
         Game.doneMoves = 0;
-        if(Game.playingPlayer == 0){
+        frame.dispose();
+        frame = new Game(Game.jLabels, Game.playingPlayer);
+    }
+
+    /**
+     * Change player to next one
+     * @param player current player
+     */
+    private void changePlayer(int player){
+        if(player == 0){
             Game.playingPlayer = 1;
-        } else {
+        } else if(player == 1){
             Game.playingPlayer = 0;
         }
-        frame.dispose();
-        frame = new Game(Game.jLabels);
     }
 }
